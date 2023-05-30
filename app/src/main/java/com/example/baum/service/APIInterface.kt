@@ -6,13 +6,14 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 // https://square.github.io/retrofit/
 
 interface APIInterface {
-
     @GET("api/fahrzeuge")
     fun getFahrzeuge(): Call<List<Fahrzeug>>
 
@@ -33,4 +34,8 @@ interface APIInterface {
 
     @DELETE("api/fahrzeuge/{id}")
     fun deleteFahrzeug(@Path("id") id:String): Call<String>
+
+    // -----------------LOGIN--------------------------------------
+    @POST("api/auth")
+    fun loginToBackend(@Header("name") name:String, @Header("password") passwort:String) : Call<Void>
 }

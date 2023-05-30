@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.acme.rentmyride.entity.FahrzeugDTO
 import com.example.baum.service.FahrzeugService
+import com.example.baum.service.LoginService
 import com.example.test.entity.Fahrzeug
 import com.example.test.entity.KategorieTyp
 import java.math.BigDecimal
@@ -16,10 +17,16 @@ const val BASE_URL = "http://172.26.32.1:8080/"       // Powershell -> ipconfig 
 class MainActivity : AppCompatActivity() {
 
     private val service: FahrzeugService = FahrzeugService()
+
+    private val loginService : LoginService = LoginService()
+
     private lateinit var findAllFahrzeugeButton: Button
     private lateinit var findFahrzeugByIdButton: Button
     private lateinit var deleteFahrzeugeButton: Button
     private lateinit var addFahrzeugButton: Button
+
+    private lateinit var loginToBackend : Button
+
     private lateinit var ergebnisText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +37,9 @@ class MainActivity : AppCompatActivity() {
         findFahrzeugByIdButton = findViewById(R.id.buttonFindFahrzeugById)
         deleteFahrzeugeButton = findViewById(R.id.buttonDeleteFahrzeugById)
         addFahrzeugButton = findViewById(R.id.buttonAddFahrzeug)
+
+        loginToBackend = findViewById(R.id.buttonLoginToBackend)
+
         ergebnisText = findViewById(R.id.textErgebnis)
 
 
@@ -63,5 +73,10 @@ class MainActivity : AppCompatActivity() {
             service.addFahrzeug(ergebnisText, fahrzeug)
         }
 
+        loginToBackend.setOnClickListener {
+            val name = "admin"
+            val passwort = "p"
+            loginService.loginToBackend(ergebnisText, name, passwort)
+        }
     }
 }

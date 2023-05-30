@@ -13,7 +13,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 //Hier wird das APIInterface benutzt
-
 class FahrzeugService : AppCompatActivity() {
 
     fun getFahrzeugById(ergText: TextView, id: String) {

@@ -1,0 +1,145 @@
+package com.example.baum.service
+
+import android.util.Log
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.acme.rentmyride.entity.FahrzeugDTO
+import com.example.baum.BASE_URL
+import com.example.test.entity.Fahrzeug
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+//Hier wird das APIInterface benutzt
+
+class FahrzeugService : AppCompatActivity() {
+
+    fun getFahrzeugById(ergText: TextView, id: String) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+            .create(APIInterface::class.java)
+
+        val retrofitData = retrofitBuilder.getFahrzeug(id)
+
+        retrofitData.enqueue(object : Callback<Fahrzeug?> {
+            override fun onResponse(call: Call<Fahrzeug?>, response: Response<Fahrzeug?>) {
+                val responseBody = response?.body()
+
+                Log.d("MainActivity", responseBody.toString())
+
+                val myStringBuilder = StringBuilder()
+                if (responseBody != null) {
+                    myStringBuilder.append("Mein Fahrzeug hat die Fahrzeugnummer ${responseBody.fahrzeugnummer}")
+                } else {
+                    myStringBuilder.append("UFFPASSE! Kein Fahrzeug mit dieser Id vorhande!")
+                }
+
+                ergText.text = myStringBuilder
+            }
+
+            override fun onFailure(call: Call<Fahrzeug?>, t: Throwable) {
+                Log.d("MainActivity", "onFailure" + t.message)
+            }
+        })
+    }
+
+    fun getFahrzeuge(ergText: TextView) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+            .create(APIInterface::class.java)
+
+        val retrofitData = retrofitBuilder.getFahrzeuge()
+
+        retrofitData.enqueue(object : Callback<List<Fahrzeug>?> {
+            override fun onResponse(
+                call: Call<List<Fahrzeug>?>,
+                response: Response<List<Fahrzeug>?>
+            ) {
+                val responseBody = response.body()!!
+
+                Log.d("MainActivity", responseBody.toString())
+
+                val myStringBuilder = StringBuilder()
+                for (myFahrzeuge in responseBody) {
+                    myStringBuilder.append(myFahrzeuge.fahrzeugnummer)
+                    myStringBuilder.append("\n")
+                }
+
+                ergText.text = myStringBuilder
+            }
+
+            override fun onFailure(call: Call<List<Fahrzeug>?>, t: Throwable) {
+                Log.d("MainActivity", "onFailure" + t.message)
+            }
+        })
+    }
+
+    fun addFahrzeug(ergText: TextView, fahrzeug: FahrzeugDTO) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+            .create(APIInterface::class.java)
+
+        val retrofitData = retrofitBuilder.addFahrzeuge(fahrzeug)
+
+        Log.d("MainActivity", retrofitBuilder.addFahrzeuge(fahrzeug).request().toString())
+
+        retrofitData.enqueue(object : Callback<String?> {
+            override fun onResponse(call: Call<String?>, response: Response<String?>) {
+                val responseBody = response.body()!!
+
+                val myStringBuilder = StringBuilder()
+                if (responseBody != null) {
+                    myStringBuilder.append("Das neue Fahrzeug hat die Fahrzeugnummer: $responseBody!")
+                } else {
+                    myStringBuilder.append("Fahrzeug konnte nicht angelegt werden!")
+                }
+                ergText.text = myStringBuilder
+
+                Log.d("MainActivity", "Fahrzeug wurde erfolgreich hinzugefügt!")
+            }
+
+            override fun onFailure(call: Call<String?>, t: Throwable) {
+                Log.d("MainActivity", "onFailure" + t.message)
+            }
+        })
+    }
+
+    fun deleteFahrzeug(ergText: TextView, id: String) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+            .create(APIInterface::class.java)
+
+        val retrofitData = retrofitBuilder.deleteFahrzeug(id)
+
+        retrofitData.enqueue(object : Callback<String?> {
+            override fun onResponse(call: Call<String?>, response: Response<String?>) {
+                val responseCode = response.code()
+
+                Log.d("MainActivity", "ResponseCode = $responseCode")
+
+                val myStringBuilder = StringBuilder()
+                if (responseCode == 204) {
+                    myStringBuilder.append("Das Fahrzeug mit der id $id wurde gelöscht!")
+                } else {
+                    myStringBuilder.append("UFFPASSE! Kein Fahrzeug mit dieser id $id gefunden!")
+                }
+
+                ergText.text = myStringBuilder
+            }
+
+            override fun onFailure(call: Call<String?>, t: Throwable) {
+                Log.d("MainActivity", "onFailure" + t.message)
+            }
+        })
+    }
+}

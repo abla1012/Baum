@@ -1,4 +1,4 @@
 # Baum
 Test
 
-API calls für das rentMyRide backend
+Quick and dirty implementation von API calls für das rentMyRide backend!

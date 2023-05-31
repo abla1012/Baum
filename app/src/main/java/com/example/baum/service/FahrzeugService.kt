@@ -186,4 +186,5 @@ class FahrzeugService : AppCompatActivity() {
 
         return encodedString
     }
+
 }

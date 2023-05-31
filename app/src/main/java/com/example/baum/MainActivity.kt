@@ -65,19 +65,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         addFahrzeugButton.setOnClickListener {
-
-            var bildpfad: String
-
             /* For Android 11 or above use the code below on the onCreate() of the activity. It will run once and ask for permission.
-            if (Build.VERSION.SDK_INT >= 30) {
-                if (!Environment.isExternalStorageManager()) {
-                    val getpermission = Intent()
-                    getpermission.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                    startActivity(getpermission)
-                }
-            }
+                    if (Build.VERSION.SDK_INT >= 30) {
+                        if (!Environment.isExternalStorageManager()) {
+                            val getpermission = Intent()
+                            getpermission.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                            startActivity(getpermission)
+                            }
+                    }
              */
-
+            // Bilder liegen direkt im Speicher vom Handy -> device Manager -> device explorer -> storage -> emulated -> 0 -> pictures
+            var bildpfad: String
             val path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES
             )

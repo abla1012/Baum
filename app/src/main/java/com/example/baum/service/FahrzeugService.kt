@@ -1,6 +1,11 @@
 package com.example.baum.service
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Environment
+import android.util.Base64
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.acme.rentmyride.entity.FahrzeugDTO
@@ -11,11 +16,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import java.lang.Exception
 
 //Hier wird das APIInterface benutzt
 class FahrzeugService : AppCompatActivity() {
 
-    fun getFahrzeugById(ergText: TextView, id: String) {
+    fun getFahrzeugById(ergText: TextView, ergBild: ImageView, id: String) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
@@ -33,6 +40,8 @@ class FahrzeugService : AppCompatActivity() {
                 val myStringBuilder = StringBuilder()
                 if (responseBody != null) {
                     myStringBuilder.append("Mein Fahrzeug hat die Fahrzeugnummer ${responseBody.fahrzeugnummer}")
+
+                    ergBild.setImageBitmap(decodedString(responseBody.bild))
                 } else {
                     myStringBuilder.append("UFFPASSE! Kein Fahrzeug mit dieser Id vorhande!")
                 }
@@ -44,6 +53,34 @@ class FahrzeugService : AppCompatActivity() {
                 Log.d("MainActivity", "onFailure" + t.message)
             }
         })
+    }
+
+    private fun decodedString(base64String: String): Bitmap? {
+
+        var imageBytes: ByteArray
+        var decodedImage:  Bitmap
+
+        try {
+            imageBytes = Base64.decode(base64String, Base64.DEFAULT)
+            decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        } catch (e: Exception)
+        {
+            Log.d("MainActivity", "decodedStringFailed: "+e.message)
+
+            val path = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES
+            )
+            val file = File(path, "imagenotfound.jpg")
+            val bildpfad = file.absolutePath
+
+            Log.d("MainActivity", "bildpfad: "+bildpfad)
+
+            val bild = bildToString(bildpfad)
+            imageBytes = Base64.decode(bild, Base64.DEFAULT)
+            decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        }
+
+        return decodedImage
     }
 
     fun getFahrzeuge(ergText: TextView) {
@@ -140,5 +177,13 @@ class FahrzeugService : AppCompatActivity() {
                 Log.d("MainActivity", "onFailure" + t.message)
             }
         })
+    }
+
+    fun bildToString(bildpfad: String) : String {
+
+        val fileContent: ByteArray = File(bildpfad).readBytes()
+        val encodedString = java.util.Base64.getEncoder().encodeToString(fileContent)
+
+        return encodedString
     }
 }
